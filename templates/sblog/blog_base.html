@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+	<style>
+		body {
+			padding-top: 60px;
+		}
+	</style>
+
+	{% block showblogscript %}{% endblock %}
+{% endblock %}
+
+{% block header %}
+	{% block menu %}
+	<div class="navbar navbar-inverse navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container">
+				<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</a>
+				<span class="sbrand">Roger's Blog</span>
+				<ul class="nav">
+					<li class="active divider-vertical">
+						<a href="{% url bloglist %}">
+							<span class="new-wrapper">
+								<i class="nav-home"></i>
+								<i class="nav-new"></i>
+							</span>
+							home
+						</a>
+					</li>
+					<li>
+						<a href="#">
+							<span class="new-wrapper">
+								<i class="nav-me"></i>
+								<i class="nav-new"></i>
+							</span>
+							about
+						</a>
+					</li>
+					<li>
+						<a href="#">
+							<span class="new-wrapper">
+								<i class="nav-people"></i>
+								<i class="nav-new"></i>
+							</span>
+							contact
+						</a>
+					</li>
+					</ul>
+					<div class="pull-right">
+						<form class="navbar-search" method="get" action="{% url searchblog %}">
+							<input type="text" class="search-query" name="search" placeholder="Search" required="required">
+						</form>
+						<ul class="nav">
+							<li class="divider-vertical"></li>
+							<li class="dropdown">
+							<a href="#" class="dropdown-toggle myset" data-toggle="dropdown">
+								<span class="new-wrapper">
+									<i class="nav-session"></i>
+									<i class="nav-new"></i>
+								</span>
+								<b class="caret"></b>
+							</a>
+								<ul class="dropdown-menu">
+								<li><a href="{% url addblog %}"><i class="icon-plus"></i>add new blog</a>
+								</li>
+								<li><a href="#">Another action</a></li>
+								<li><a href="#">Something else here</a>
+								</li>
+								<li class="divider"></li>
+								<li><a href="#">Separaed link</a></li>
+								</ul>
+							</li>
+							<li class="divider-vertical"></li>
+						</ul>
+						{% comment %}
+						<a class="btn btn-info btn-tweet" href="#myModal" role="button" data-toggle="modal">
+									<span>write tweets</span>
+							</a>
+						{% endcomment %}
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal hide fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-header twitter-modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+				<h3 id="myModalLabel">Modal header</h3>
+			</div>
+			<form action="" method="post">{% csrf_token %}
+			<div class="modal-body twitter-modal-body">
+				<textarea name="twitter" class="twitter" id="twitter" required="required"></textarea>
+			</div>
+			<div class="modal-footer twitter-modal-footer">
+				<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+				<button id="send" class="btn btn-primary" type="submit" name="submit">Save changes</button>
+			</div>
+			</form>
+		</div>
+		{% endblock %}
+	{% endblock %}
+
+
+{% comment %}
+{% block comments %}
+<article id="cmt">
+	{% get_comment_count for blog as comment_count %}
+		<h4 class="muted comtop">{{ comment_count }} Comments</h4>
+		<hr class="soften">
+	{% get_comment_list for blog as blog_com %}
+	{% for comment in blog_com %}
+		<div class="container-fluid none-padding">
+			<p class="muted"><small>{{ comment.user }}</small>{{ comment.submit_date|date:"F,j,Y" }}</small></p>
+			{{ comment }}
+		</div>
+		<hr class="soften">
+	{% endfor %}
+</article>
+<article>
+	{% get_comment_form for blog as blog_form %}
+		<div id="comment_form">
+			<h4 class="muted comtop">New Comments</h4>
+			<form class="form-horizontal" action="{% comment_form_target %}" method="post">
+				<fieldset>
+				{% csrf_token %}
+				{{ blog_form.object_pk }}
+				{{ blog_form.content_type }}
+				{{ blog_form.timestamp }}
+				{{ blog_form.site }}
+				{{ blog_form.submit_date }}
+				{{ blog_form.security_hash }}
+				<div class="control-group">
+					<label class="control-label" for="id_name">name: </label>
+					<div class="controls">
+						<input type="text" id="id_name" class="input-xlarge" name="name" placeholder="please enter name" required="required">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label" for="id_email">email: </label>
+					<div class="controls">
+						<input class="input-xlarge" id="id_email" type="email" name="email" placeholder="please enter email" required="required">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label" for="id_comment">comment: </label>
+					<div class="controls">
+						<textarea class="input-xlarge comment" id="id_comment" name="comment" placeholder="please enter comment" required="required"></textarea>
+					</div>
+				</div>
+				<p style="display:none;">
+				<label for="id_honeypot">
+				如果你在该字段输入如何内容，那么你的评论就会被视为垃圾评论。
+				</label> 
+				<input type="text" name="honeypot" id="id_honeypot">
+				</p>
+				<div class="form-actions">
+					<input class="btn btn-info" type="submit" name="submit" value="POST">
+					{# <input class="btn btn-info" type="submit" name="preview" value="Preview"> #}
+					<input type='hidden' name='next' value='{% url detailblog blog.id %}'/>
+				</div>
+				</fieldset>
+			</form>
+		</div>
+</article>
+{% endblock %}
+{% endcomment %}
+
+
+
